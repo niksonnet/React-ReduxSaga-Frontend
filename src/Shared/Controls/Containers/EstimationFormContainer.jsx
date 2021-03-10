@@ -59,7 +59,7 @@ class EstimateFormContainer extends Component {
       (prevState) => ({
         estimation: {
           ...prevState.estimation,
-          discount: value,
+          discount: +value,
           total: +(prevState.goldPrice * prevState.goldWeight),
         },
       }),
@@ -69,7 +69,7 @@ class EstimateFormContainer extends Component {
 
   handleFormSubmit(e) {
     e.preventDefault();
-    let estimationData = this.state.estimation;
+    // let estimationData = this.state.estimation;
 
     // calculate total **
     this.setState(
@@ -99,7 +99,7 @@ class EstimateFormContainer extends Component {
     return (
       <form className='container-fluid' onSubmit={this.handleFormSubmit}>
         <Input
-          type={'text'}
+          type={'number'}
           title={'Gold Price (per gram)'}
           name={'goldPrice'}
           value={this.state.estimation.goldPrice}
@@ -107,7 +107,7 @@ class EstimateFormContainer extends Component {
           handleChange={this.handleGoldPrice}
         />{' '}
         <Input
-          type={'text'}
+          type={'number'}
           title={'Weight (grams)'}
           name={'goldWeight'}
           value={this.state.estimation.goldWeight}
@@ -115,15 +115,16 @@ class EstimateFormContainer extends Component {
           handleChange={this.handleGoldWeight}
         />{' '}
         <Input
-          type={'text'}
+          type={'number'}
           title={'Total Price'}
           name={'total'}
           value={this.state.estimation.total}
           placeholder={'0.00'}
-          //  handleChange={this.handleTotal}
+          isReadOnly={true}
+          // handleChange={this.handleDiscount}
         />{' '}
         <Input
-          type={'text'}
+          type={'number'}
           title={'Discount %'}
           name={'discount'}
           value={this.state.estimation.discount}
@@ -135,6 +136,7 @@ class EstimateFormContainer extends Component {
           type={'primary'}
           title={'Calculate'}
           style={buttonStyle}
+          handleChange={this.handleDiscount}
         />{' '}
         <Button
           action={this.handleClearForm}
