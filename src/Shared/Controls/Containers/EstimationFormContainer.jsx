@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Input from '../Input/Input';
 import Button from '../Button/Button';
@@ -194,4 +195,10 @@ const buttonStyle = {
   margin: '10px 10px 10px 10px',
 };
 
-export default EstimateFormContainer;
+const mapStateToProps = (state) => ({
+  user: state.user,
+});
+// const mapDispatchToProps = {
+// };
+
+export default connect(mapStateToProps, null)(EstimateFormContainer);

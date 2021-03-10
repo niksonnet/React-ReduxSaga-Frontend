@@ -1,7 +1,8 @@
-import React, { Component } from "react";
-
-import Input from "../Input/Input";
-import Button from "../Button/Button";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import Input from '../Input/Input';
+import Button from '../Button/Button';
+import { Login } from '../../../Actions/actions.js';
 
 class FormContainer extends Component {
   constructor(props) {
@@ -9,9 +10,9 @@ class FormContainer extends Component {
 
     this.state = {
       user: {
-        username: "",
-        password: ""
-      }
+        username: '',
+        password: '',
+      },
     };
 
     this.handlePassword = this.handlePassword.bind(this);
@@ -20,15 +21,14 @@ class FormContainer extends Component {
     this.handleClearForm = this.handleClearForm.bind(this);
   }
 
-
   handleUsername(e) {
     let value = e.target.value;
     this.setState(
-      prevState => ({
+      (prevState) => ({
         user: {
           ...prevState.user,
-          username: value
-        }
+          username: value,
+        },
       }),
       () => console.log(this.state.user)
     );
@@ -37,11 +37,11 @@ class FormContainer extends Component {
   handlePassword(e) {
     let value = e.target.value;
     this.setState(
-      prevState => ({
+      (prevState) => ({
         user: {
           ...prevState.user,
-          password: value
-        }
+          password: value,
+        },
       }),
       () => console.log(this.state.user)
     );
@@ -49,74 +49,63 @@ class FormContainer extends Component {
 
   handleFormSubmit(e) {
     e.preventDefault();
-    let userData = this.state.use;
+    let userData = this.state.user;
 
-    fetch("http://example.com", {
-      method: "POST",
-      body: JSON.stringify(userData),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      }
-    }).then(response => {
-      response.json().then(data => {
-        console.log("Successful" + data);
-      });
-    });
+    Login(userData);
   }
 
   handleClearForm(e) {
     e.preventDefault();
     this.setState({
       user: {
-        username: "",
-        password: ""
-      }
+        username: '',
+        password: '',
+      },
     });
   }
 
   render() {
     return (
-      <form className="container-fluid" onSubmit={this.handleFormSubmit}>
+      <form className='container-fluid' onSubmit={this.handleFormSubmit}>
         <Input
-          type={"text"}
-          title={"Username"}
-          name={"username"}
+          type={'text'}
+          title={'Username'}
+          name={'username'}
           value={this.state.user.username}
-          placeholder={"username"}
+          placeholder={'username'}
           handleChange={this.handleUsername}
-        />{" "}
-
+        />{' '}
         <Input
-          type={"password"}
-          name={"password"}
-          title={"Password"}
+          type={'password'}
+          name={'password'}
+          title={'Password'}
           value={this.state.user.password}
-          placeholder={"Password"}
+          placeholder={'Password'}
           handleChange={this.handlePassword}
-        />{" "}
-
+        />{' '}
         <Button
           action={this.handleFormSubmit}
-          type={"primary"}
-          title={"Submit"}
+          type={'primary'}
+          title={'Submit'}
           style={buttonStyle}
-        />{" "}
-
+        />{' '}
         <Button
           action={this.handleClearForm}
-          type={"secondary"}
-          title={"Cancel"}
+          type={'secondary'}
+          title={'Cancel'}
           style={buttonStyle}
-        />{" "}
-
+        />{' '}
       </form>
     );
   }
 }
 
 const buttonStyle = {
-  margin: "10px 10px 10px 10px"
+  margin: '10px 10px 10px 10px',
 };
 
-export default FormContainer;
+const mapDispatchToProps = {
+  fetchUser: Login,
+};
+
+export default connect(null, mapDispatchToProps)(FormContainer);
