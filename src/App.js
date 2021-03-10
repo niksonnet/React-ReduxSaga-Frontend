@@ -1,4 +1,3 @@
-import { BrowserRouter as Router } from "react-router-dom"
 import { Switch, Route } from "react-router-dom"
 
 import './App.css';
@@ -8,15 +7,13 @@ import { Fragment } from "react";
 
 function App() {
   return (
-    <Router>
-      <Fragment>
-        <Switch>
-          <Route exact path="/" > <Login /></Route>
-          <Route exact path="/login" > <Login /></Route>
-          <Route exact path="/estimation" > <Estimation /></Route>
-        </Switch>
-      </Fragment>
-    </Router>
+    <Fragment>
+      <Switch>
+        <Route exact path="/" > <Login /></Route>
+        <Route exact path="/login" > <Login /></Route>
+        <Route exact path="/estimation" > <Estimation /></Route>
+      </Switch>
+    </Fragment>
   );
 }
 
