@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Input from '../Input/Input';
 import Button from '../Button/Button';
-import { Login } from '../../../Actions/actions.js';
+import { AuthUser } from '../../../Actions/actions.js';
 
 class FormContainer extends Component {
   constructor(props) {
@@ -50,8 +50,7 @@ class FormContainer extends Component {
   handleFormSubmit(e) {
     e.preventDefault();
     let userData = this.state.user;
-
-    Login(userData);
+    this.props.AuthUser(userData);
   }
 
   handleClearForm(e) {
@@ -104,8 +103,12 @@ const buttonStyle = {
   margin: '10px 10px 10px 10px',
 };
 
+// const mapDispatchToProps = (dispatch) => ({
+//   fetchUser: (userData) => dispatch(Login(userData)),
+// });
+
 const mapDispatchToProps = {
-  fetchUser: Login,
+  AuthUser,
 };
 
 export default connect(null, mapDispatchToProps)(FormContainer);
