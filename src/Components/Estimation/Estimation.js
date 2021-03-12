@@ -3,17 +3,23 @@ import React from 'react'
 
 import "./Estimation.css"
 import EstimateFormContainer from "../../Shared/Controls/Containers/EstimationFormContainer"
+import ErrorFallback from "../ErrorFallback"
+import { ErrorBoundary } from 'react-error-boundary'
+
 
 function Estimation(props) {
   return (
     <div className=" col-md-4 estimate-form">
-      <h3>Welcome Mr. X </h3>
-      <h3>Fill up Gold Rates </h3>
+      <h3>Calculate Jewelry Estimation</h3>
       <hr />
-      <EstimateFormContainer></EstimateFormContainer>
+      <ErrorBoundary
+        FallbackComponent={ErrorFallback}>
+        <EstimateFormContainer />
+      </ErrorBoundary>
       <hr />
     </div>
   );
 }
+
 
 export default Estimation;
