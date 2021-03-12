@@ -1,21 +1,22 @@
-import { LOGIN_FAILED, LOGIN_STARTED, LOGIN_SUCCESS } from "../Util"
-import Api from "../API/Api"
+import * as type from "../Types"
+// import Api from "../API/Api"
 
-export const Login = (data) => ({
-  type: LOGIN_STARTED,
-  userData: data
+//Login
+export const AuthUser = (user) => ({
+  type: type.LOGIN_STARTED,
+  payload: user
 })
 
-export const AuthUser = (userPayload) => dispatch => {
-  dispatch({ type: LOGIN_STARTED });
+// export const AuthUser = (userPayload) => dispatch => {
+//   dispatch({ type: LOGIN_STARTED });
 
-  return Api
-    .AuthenticateUser(userPayload)
-    .then(response => response.json())
-    .then(data =>
-      dispatch({ type: LOGIN_SUCCESS, data }),
-      error => dispatch({
-        type: LOGIN_FAILED,
-        error: error.message || 'Unexpected Error!!!'
-      }))
-};
+//   return Api
+//     .AuthenticateUser(userPayload)
+//     .then(response => response.json())
+//     .then(data =>
+//       dispatch({ type: LOGIN_SUCCESS, data }),
+//       error => dispatch({
+//         type: LOGIN_FAILED,
+//         error: error.message || 'Unexpected Error!!!'
+//       }))
+// };

@@ -29,8 +29,8 @@ class FormContainer extends Component {
           ...prevState.user,
           username: value,
         },
-      }),
-      () => console.log(this.state.user)
+      })
+      // ,      () => console.log(this.state.user)
     );
   }
 
@@ -42,8 +42,7 @@ class FormContainer extends Component {
           ...prevState.user,
           password: value,
         },
-      }),
-      () => console.log(this.state.user)
+      }) // ,      () => console.log(this.state.user)
     );
   }
 
