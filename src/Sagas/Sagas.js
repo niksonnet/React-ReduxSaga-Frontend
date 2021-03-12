@@ -1,26 +1,10 @@
-import { all, call, put, takeLatest } from "redux-saga/effects";
-import * as type from "../Types";
+import { all, call, put, take, takeLatest } from "redux-saga/effects";
 
-//http://localhost:52632/
-// function asyncAuthUser(userPayload) {
-//   return fetch(type.API_URI, {
-//     method: 'POST',
-//     body: JSON.stringify(userPayload),
-//     headers: {
-//       'Accept': 'application/json',
-//       'Content-Type': 'application/json',
-//     },
-//   }).then((response) => {
-//     response.json().catch((error) => { throw error });
-//   });
-
-// }
+import * as type from "../Reducers/Types";
+import * as storage from "../LocalStorage/LocalStorage"
 
 function* fetchUser(action) {
   try {
-
-    //const userResponse = yield call(asyncAuthUser, action.payload);
-
     const userResponse = yield call(fetch,
       type.API_URI,
       {
@@ -31,19 +15,45 @@ function* fetchUser(action) {
         body: JSON.stringify(action.payload)
       });
     let user = yield userResponse.json();
-
-    yield put({ type: type.LOGIN_SUCCESS, payload: user })
+    storage.setUser(user);
+    yield put({ type: type.LOGIN_SUCCESS, payload: user });
   } catch (error) {
-    yield put({ type: type.LOGIN_FAILED, error: error })
+    yield put({ type: type.LOGIN_FAILED, error: error });
   }
+}
 
+function* Logout() {
+  storage.deleteLocalStorage('user');
+
+  console.log("Logout executed", storage.getUser("user"));
+
+  yield put({ type: type.USER_LOGOUT });
 }
 
 function* actionWatcher() {
-  yield takeLatest(type.LOGIN_STARTED, fetchUser)
+
+
+  yield takeLatest(type.LOGIN_STARTED, fetchUser);
+  // yield takeLatest(type.USER_LOGOUT, Logout);
+
+  // while (true) {
+  const action = yield take('*')
+  switch (action.type) {
+    case type.LOGIN_STARTED:
+      yield takeLatest(type.LOGIN_STARTED, fetchUser);
+      break;
+    case type.USER_LOGOUT:
+      yield takeLatest(type.USER_LOGOUT, Logout);
+      break;
+    default:
+      break;
+  }
+  //   console.log(action.type);
+  // }
 }
+
 export default function* rootSaga() {
   yield all([
-    actionWatcher(),
+    actionWatcher()
   ]);
 }

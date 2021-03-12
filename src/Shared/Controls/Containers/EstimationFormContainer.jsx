@@ -1,20 +1,27 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import Input from '../Input/Input';
 import Button from '../Button/Button';
 import { Fragment } from 'react';
 import Header from '../Header/Header';
+import { LogoutUser } from '../../../Actions/actions';
+import * as storage from '../../../LocalStorage/LocalStorage';
 
 class EstimateFormContainer extends Component {
   constructor(props) {
     super(props);
 
+    const discountVal = this.isPrivilegedUser(this.props.user.user.role)
+      ? this.props.user.user.discount['percentage']
+      : 2;
+
     this.state = {
       estimation: {
         goldPrice: 0,
         goldWeight: 0,
-        discount: 2,
+        discount: discountVal,
         total: 0,
       },
     };
@@ -23,6 +30,7 @@ class EstimateFormContainer extends Component {
     this.handleGoldWeight = this.handleGoldWeight.bind(this);
     this.handleDiscount = this.handleDiscount.bind(this);
     this.calculateTotal = this.calculateTotal.bind(this);
+    this.isPrivilegedUser = this.isPrivilegedUser.bind(this);
 
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.handleClearForm = this.handleClearForm.bind(this);
@@ -35,11 +43,11 @@ class EstimateFormContainer extends Component {
         estimation: {
           ...prevState.estimation,
           goldPrice: value,
-          total: this.calculateTotal(
-            prevState.estimation.goldPrice,
-            prevState.estimation.goldWeight,
-            prevState.estimation.discount
-          ),
+          // total: this.calculateTotal(
+          //   prevState.estimation.goldPrice,
+          //   prevState.estimation.goldWeight,
+          //   prevState.estimation.discount
+          // ),
         },
       }),
       () => console.log(this.state.estimation)
@@ -53,11 +61,11 @@ class EstimateFormContainer extends Component {
         estimation: {
           ...prevState.estimation,
           goldWeight: value,
-          total: this.calculateTotal(
-            prevState.estimation.goldPrice,
-            prevState.estimation.goldWeight,
-            prevState.estimation.discount
-          ),
+          // total: this.calculateTotal(
+          //   prevState.estimation.goldPrice,
+          //   prevState.estimation.goldWeight,
+          //   prevState.estimation.discount
+          // ),
         },
       }),
       () => console.log(this.state.estimation)
@@ -70,23 +78,30 @@ class EstimateFormContainer extends Component {
       (prevState) => ({
         estimation: {
           ...prevState.estimation,
-          discount: +value,
-          total: this.calculateTotal(
-            prevState.estimation.goldPrice,
-            prevState.estimation.goldWeight,
-            prevState.estimation.discount
-          ),
+          discount: parseFloat(value).toFixed(2),
+          // total: this.calculateTotal(
+          //   prevState.estimation.goldPrice,
+          //   prevState.estimation.goldWeight,
+          //   prevState.estimation.discount
+          // ),
         },
       }),
       () => console.log(this.state.estimation)
     );
   }
-
+  //Check User Role
+  isPrivilegedUser(role) {
+    return role.toLocaleLowerCase() === 'privileged';
+  }
   // Calculate Rate
   calculateTotal(rate, weight, discount) {
-    return parseFloat(
-      discount > 0 ? rate * weight - discount / 100 : rate * weight
-    ).toFixed(2);
+    if (this.isPrivilegedUser(this.props.user.user.role)) {
+      return parseFloat(
+        discount > 0 ? rate * weight - discount / 100 : rate * weight
+      ).toFixed(2);
+    }
+
+    return parseFloat(rate * weight).toFixed(2);
   }
 
   handleFormSubmit(e) {
@@ -111,20 +126,34 @@ class EstimateFormContainer extends Component {
 
   handleClearForm(e) {
     e.preventDefault();
+    const discountVal = this.isPrivilegedUser(this.props.user.user.role)
+      ? this.props.user.user.discount['percentage']
+      : 2;
+
     this.setState({
       estimation: {
         goldPrice: 0,
         goldWeight: 0,
-        discount: 2,
+        discount: discountVal,
         total: 0,
       },
     });
+
+    storage.deleteLocalStorage('user');
+    this.props.logoutUser();
   }
 
   render() {
+    if (
+      this.props.user.loggedIn === undefined ||
+      this.props.user.loggedIn === false
+    ) {
+      return <Redirect to='/login' />;
+    }
+
     return (
       <Fragment>
-        <Header activeUser={'User'}></Header>
+        <Header activeUser={this.props.user.user.username}></Header>
 
         <form className='container-fluid' onSubmit={this.handleFormSubmit}>
           <Input
@@ -152,14 +181,16 @@ class EstimateFormContainer extends Component {
             isReadOnly={true}
             // handleChange={this.handleDiscount}
           />{' '}
-          <Input
-            type={'number'}
-            title={'Discount %'}
-            name={'discount'}
-            value={this.state.estimation.discount}
-            placeholder={'0.00'}
-            handleChange={this.handleDiscount}
-          />{' '}
+          {this.isPrivilegedUser(this.props.user.user.role) ? (
+            <Input
+              type={'number'}
+              title={'Discount %'}
+              name={'discount'}
+              value={this.state.estimation.discount}
+              placeholder={'0.00'}
+              handleChange={this.handleDiscount}
+            />
+          ) : null}
           <Button
             action={this.handleFormSubmit}
             type={'primary'}
@@ -198,7 +229,13 @@ const buttonStyle = {
 const mapStateToProps = (state) => ({
   user: state.user,
 });
-// const mapDispatchToProps = {
-// };
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logoutUser: () => dispatch(LogoutUser()),
+  };
+};
 
-export default connect(mapStateToProps, null)(EstimateFormContainer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EstimateFormContainer);
