@@ -12,6 +12,7 @@ import Header from '../Header/Header';
 import { LogoutUser } from '../../../Actions/actions';
 import * as storage from '../../../LocalStorage/LocalStorage';
 import ModelPopup from '../../../Components/MessagePopup/MessagePopup';
+import { FormErrors } from '../../../Components/FormErrors';
 
 class EstimateFormContainer extends Component {
   constructor(props) {
@@ -32,6 +33,10 @@ class EstimateFormContainer extends Component {
         total: 0,
       },
       error: null,
+      formErrors: { goldRate: '', goldWeight: '' },
+      goldRateValid: false,
+      goldWeightValid: false,
+      formValid: false,
     };
 
     this.handleGoldPrice = this.handleGoldPrice.bind(this);
@@ -42,6 +47,7 @@ class EstimateFormContainer extends Component {
     this.printToFile = this.printToFile.bind(this);
     this.handlePrintOnPaper = this.handlePrintOnPaper.bind(this);
 
+    this.handleInput = this.handleInput.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.handleClearForm = this.handleClearForm.bind(this);
   }
@@ -51,6 +57,55 @@ class EstimateFormContainer extends Component {
       ...state,
       error: error,
     }));
+  }
+  validateField(fieldName, value) {
+    let fieldValidationErrors = this.state.formErrors;
+    let goldRateValid = this.state.goldRateValid;
+    let goldWeightValid = this.state.goldWeightValid;
+
+    switch (fieldName) {
+      case 'goldPrice':
+        goldRateValid = value > 0;
+        fieldValidationErrors.goldRate = goldRateValid
+          ? ''
+          : ' must be greater then zero';
+        break;
+      case 'goldWeight':
+        goldWeightValid = value > 0;
+        fieldValidationErrors.goldWeight = goldWeightValid
+          ? ''
+          : ' must be greater then zero';
+        break;
+      default:
+        break;
+    }
+    this.setState(
+      {
+        formErrors: fieldValidationErrors,
+        goldRateValid: goldRateValid,
+        goldWeightValid: goldWeightValid,
+      },
+      this.validateForm
+    );
+  }
+  validateForm() {
+    this.setState({
+      formValid: this.state.goldRateValid && this.state.goldWeightValid,
+    });
+  }
+
+  handleInput(e) {
+    let value = e.target.value;
+    let name = e.target.name;
+    this.setState(
+      (prevState) => ({
+        estimation: {
+          ...prevState.estimation,
+          [name]: value,
+        },
+      }),
+      () => this.validateField(name, value)
+    );
   }
 
   handleGoldPrice(e) {
@@ -185,6 +240,12 @@ class EstimateFormContainer extends Component {
 
       return (
         <Fragment>
+          {this.state.formErrors ? (
+            <div className='panel panel-default'>
+              <FormErrors formErrors={this.state.formErrors} />
+            </div>
+          ) : null}
+
           <Header activeUser={this.props.user.user.username}></Header>
 
           <form className='container-fluid' onSubmit={this.handleFormSubmit}>
@@ -194,7 +255,8 @@ class EstimateFormContainer extends Component {
               name={'goldPrice'}
               value={this.state.estimation.goldPrice}
               placeholder={'0.00'}
-              handleChange={this.handleGoldPrice}
+              //handleChange={this.handleGoldPrice}
+              handleChange={this.handleInput}
             />{' '}
             <Input
               type={'number'}
@@ -202,7 +264,8 @@ class EstimateFormContainer extends Component {
               name={'goldWeight'}
               value={this.state.estimation.goldWeight}
               placeholder={'0.00'}
-              handleChange={this.handleGoldWeight}
+              //handleChange={this.handleGoldWeight}
+              handleChange={this.handleInput}
             />{' '}
             <Input
               type={'number'}
@@ -229,24 +292,28 @@ class EstimateFormContainer extends Component {
               title={'Calculate'}
               style={buttonStyle}
               handleChange={this.handleDiscount}
+              disabled={!this.state.formValid}
             />{' '}
             <ModelPopup
               title={'Print to Screen'}
               rate={this.state.estimation.goldPrice}
               weight={this.state.estimation.goldWeight}
               total={this.state.estimation.total}
+              disabled={!this.state.formValid}
             />
             <Button
               action={this.printToFile}
               type={'primary'}
               title={'Print to File'}
               style={buttonStyle}
+              disabled={!this.state.formValid}
             />{' '}
             <Button
               action={this.handlePrintOnPaper}
               type={'primary'}
               title={'Print to Paper'}
               style={buttonStyle}
+              disabled={!this.state.formValid}
             />{' '}
             <Button
               action={this.handleClearForm}

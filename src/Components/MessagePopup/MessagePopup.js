@@ -18,7 +18,7 @@ export default function ModelPopup(props) {
 
   return (
     <Fragment>
-      <button style={buttonStyle} className="btn btn-primary" onClick={toggleModal}>{props.title}</button>
+      <button style={buttonStyle} disabled={props.disabled} className="btn btn-primary" onClick={toggleModal}>{props.title}</button>
       <Modal
         isOpen={isOpen}
         onRequestClose={toggleModal}
