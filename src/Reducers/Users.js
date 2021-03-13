@@ -31,9 +31,13 @@ export default function users(state = initialState, action) {
         error: null
       }
     case type.LOGIN_FAILED:
-      return { ...state, error: action.error, loading: false }
+      return {
+        ...state, error: action.error,
+        loading: false,
+        loggedIn: false,
+      }
     case type.USER_LOGOUT:
-      return { user: {}, error: null, loggedIn: false, loading: false }
+      return { user: { error: false }, loggedIn: false, loading: false }
     default:
       return state;
   }

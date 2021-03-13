@@ -15,8 +15,13 @@ function* fetchUser(action) {
         body: JSON.stringify(action.payload)
       });
     let user = yield userResponse.json();
-    storage.setUser(user);
-    yield put({ type: type.LOGIN_SUCCESS, payload: user });
+    if (userResponse.status >= 200 && userResponse.status < 300) {
+      storage.setUser(user);
+      yield put({ type: type.LOGIN_SUCCESS, payload: user });
+    } else {
+      yield put({ type: type.LOGIN_FAILED, error: user.message });
+    }
+
   } catch (error) {
     yield put({ type: type.LOGIN_FAILED, error: error });
   }
