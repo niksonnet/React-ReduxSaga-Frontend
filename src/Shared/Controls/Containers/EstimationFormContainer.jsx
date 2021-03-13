@@ -12,7 +12,6 @@ import Header from '../Header/Header';
 import { LogoutUser } from '../../../Actions/actions';
 import * as storage from '../../../LocalStorage/LocalStorage';
 import ModelPopup from '../../../Components/MessagePopup/MessagePopup';
-import ErrorFallback from '../../../Components/ErrorFallback';
 
 class EstimateFormContainer extends Component {
   constructor(props) {
@@ -45,6 +44,13 @@ class EstimateFormContainer extends Component {
 
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.handleClearForm = this.handleClearForm.bind(this);
+  }
+
+  componentDidCatch(error) {
+    this.setState((state) => ({
+      ...state,
+      error: error,
+    }));
   }
 
   handleGoldPrice(e) {
@@ -138,12 +144,12 @@ class EstimateFormContainer extends Component {
     doc.save('Jewelry-Estimation.pdf');
   }
 
-  static getDerivedStateFromError(error) {
-    return { error: error };
-  }
   handlePrintOnPaper(e) {
     e.preventDefault();
-    throw new Error('Method not implemented exception');
+    this.setState({
+      ...this.state,
+      error: new Error('Method not implemented exception'),
+    });
   }
   handleClearForm(e) {
     e.preventDefault();
@@ -171,6 +177,10 @@ class EstimateFormContainer extends Component {
         this.props.user.loggedIn === false
       ) {
         return <Redirect to='/login' />;
+      }
+
+      if (this.state.error) {
+        throw new Error(this.state.error);
       }
 
       return (
@@ -248,7 +258,7 @@ class EstimateFormContainer extends Component {
         </Fragment>
       );
     } catch (error) {
-      return <ErrorFallback error={error} />;
+      throw new Error('Method Not Implemented exception');
     }
   }
 }

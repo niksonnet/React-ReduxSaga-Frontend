@@ -3,17 +3,15 @@ import React from 'react'
 
 import "./Estimation.css"
 import EstimateFormContainer from "../../Shared/Controls/Containers/EstimationFormContainer"
-import ErrorFallback from "../ErrorFallback"
-import { ErrorBoundary } from 'react-error-boundary'
+import ErrorBoundary from '../ErrorBoundary'
 
 
-function Estimation(props) {
+function Estimation() {
   return (
-    <div className=" col-md-4 estimate-form">
+    <div className="col-md-4 estimate-form">
       <h3>Calculate Jewelry Estimation</h3>
       <hr />
-      <ErrorBoundary
-        FallbackComponent={ErrorFallback}>
+      <ErrorBoundary>
         <EstimateFormContainer />
       </ErrorBoundary>
       <hr />

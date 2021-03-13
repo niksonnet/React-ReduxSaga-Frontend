@@ -57,8 +57,9 @@ class FormContainer extends Component {
         password: '',
       },
     });
-
-    this.props.LogoutUser();
+    if (this.props.user.loggedIn && this.props.user.loggedIn === true) {
+      this.props.LogoutUser();
+    }
   }
 
   render() {
