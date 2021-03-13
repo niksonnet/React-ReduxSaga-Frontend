@@ -165,7 +165,7 @@ class FormContainer extends Component {
           <Button
             action={this.handleFormSubmit}
             type={'primary'}
-            title={'Submit'}
+            title={'Login'}
             style={buttonStyle}
             disabled={!this.state.formValid}
           />{' '}

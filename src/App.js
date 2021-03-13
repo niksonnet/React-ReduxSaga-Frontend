@@ -1,4 +1,4 @@
-import { Switch, Route } from "react-router-dom"
+import { Switch, Route, BrowserRouter as Router } from "react-router-dom"
 
 import './App.css';
 import Login from "./Components/Login/Login";
@@ -9,12 +9,14 @@ import { PrivateRoute } from "./Components/PrivateRoute.jsx"
 function App() {
   return (
     <Fragment>
-      <Switch>
-        <Route exact path="/" component={Login} />
-        <Route exact path="/login" component={Login} />
-        <Route exact path="/estimation" component={Estimation} />
-        <PrivateRoute exact path="/estimation-auth" component={Estimation} />
-      </Switch>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={Login} />
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/estimation" component={Estimation} />
+          <PrivateRoute exact path="/estimation-auth" component={Estimation} />
+        </Switch>
+      </Router>
     </Fragment>
   );
 }
