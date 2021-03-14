@@ -51,6 +51,7 @@
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.6",
     "jest-canvas-mock": "^2.3.1",
+    "react-test-renderer": "^17.0.1",
     "redux-devtools-extension": "^2.13.9",
     "redux-mock-store": "^1.5.4"
   }

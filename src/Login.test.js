@@ -1,43 +1,65 @@
-import React from 'react';
-import { shallow, mount } from 'enzyme';
+import React from "react";
+// import { shallow, mount } from 'enzyme';
 import { Provider } from "react-redux";
 import configureMockStore from "redux-mock-store";
+import renderer from "react-test-renderer";
 
+import LoginForm from "../src/Shared/Controls/Containers/LoginFormContainer";
 
-import LoginFormContainer from "../src/Shared/Controls/Containers/LoginFormContainer";
-import App from "./App"
+import * as actionType from "../src/Actions/actions"
+import * as types from "./Reducers/Types";
 
-const mockStore = configureMockStore();
-const store = mockStore({
-  user: { loggedIn: true }
-});
+let mockStore = configureMockStore();
 
-describe("Test LoginFormContainer Component", () => {
-  const wrapper = mount(
-    <Provider store={store}>
-      <LoginFormContainer />
-    </Provider>).dive();
+describe("Test LoginForm Component", () => {
+  let store;
+  let wrapper;
+  const [username, password] = ["Regular", "Test@123"]
 
+  const payload = {
+    username: username,
+    password: password
+  }
+  beforeEach(() => {
+    store = mockStore({
+      user: {
+        username: username,
+        role: password,
+        discount: 0
+      },
+      loading: false,
+      loggedIn: true,
+      error: null
 
-  it("Should have button component", () => {
-    // const app = mount(<wrapper />);
-    // let txt = app.find('button').text()
-    // expect(txt).toEqual("Form is Incomplete!");
+    });
 
-    expect(wrapper.find('Button').text()).toEqual('Login');
-    //expect(wrapper.find("button").first().text()).toHaveLength(2);
+    wrapper = renderer.create(
+      <Provider store={store}>
+        <LoginForm />
+      </Provider>);
+  });
 
-    // //Button : should be of type button
-    // expect(wrapper.find('Button')
-    //   .type().defaultProps.type)
-    //   .toEqual('button');
+  it("should render with exact given state from Redux store", () => {
+    expect(wrapper.toJSON()).toMatchSnapshot();
+  });
 
-    //Button : should have matching text
-    console.log("log -", wrapper.find("Connect"));
-    expect(wrapper.find("button").first().length).toHaveLength(1);
-    // expect(wrapper.find('Button').text()).toEqual('Login');
+  it("Login Action Method with payload", () => {
+    const expectedLoginAction = {
+      type: types.LOGIN_STARTED,
+      payload
+    }
+    expect(actionType.AuthUser(payload)).toEqual(expectedLoginAction);
+
+    const expectedLogoutAction = {
+      type: types.USER_LOGOUT
+    }
+    expect(actionType.LogoutUser()).toEqual(expectedLogoutAction);
+  });
+  it("Logout Action Method with payload", () => {
+
+    const expectedLogoutAction = {
+      type: types.USER_LOGOUT
+    }
+    expect(actionType.LogoutUser()).toEqual(expectedLogoutAction);
   });
 });
-
-
-
