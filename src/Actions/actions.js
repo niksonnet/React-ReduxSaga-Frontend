@@ -10,3 +10,9 @@ export const AuthUser = (user) => ({
 export const LogoutUser = () => ({
   type: type.USER_LOGOUT
 })
+
+export const StartEstimation = (estimation) => ({
+  type: type.ESTIMATION_STARTED,
+  payload: estimation
+})
+

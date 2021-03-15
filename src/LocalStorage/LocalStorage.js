@@ -1,9 +1,11 @@
+export const USER_STORAGE_KEY = "user";
+export const ESTIMATION_STORAGE_KEY = "estimation";
 
-export const setUser = user => {
-  localStorage.setItem("user", JSON.stringify(user));
+export const setLocalStorage = (key, value) => {
+  localStorage.setItem(key, JSON.stringify(value));
 }
 
-export const getUser = key => {
+export const getLocalStorage = key => {
   return JSON.parse(localStorage.getItem(key));
 }
 

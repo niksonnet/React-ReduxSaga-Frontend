@@ -1,13 +1,13 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
-import { getUser } from '../LocalStorage/LocalStorage';
+import * as storage from '../LocalStorage/LocalStorage';
 
 export const PrivateRoute = ({ component: Component, ...params }) => (
   <Route
     {...params}
     render={(props) =>
-      getUser('user') ? (
+      storage.setLocalStorage(storage.USER_STORAGE_KEY) ? (
         <Component {...params} />
       ) : (
         <Redirect

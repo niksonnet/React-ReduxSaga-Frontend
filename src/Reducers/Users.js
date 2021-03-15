@@ -1,7 +1,7 @@
 import * as type from "./Types"
 import * as Storage from "../LocalStorage/LocalStorage"
 
-let user = Storage.getUser("user");
+let user = Storage.setLocalStorage(Storage.USER_STORAGE_KEY);
 const initialState = user ? {
   loggedIn: true,
   loading: false,
@@ -24,7 +24,8 @@ export default function users(state = initialState, action) {
         user: {
           username: action.payload.username,
           role: action.payload.role,
-          discount: action.payload.discount
+          discount: action.payload.discount,
+          token: action.payload.token
         },
         loading: false,
         loggedIn: true,
@@ -37,7 +38,14 @@ export default function users(state = initialState, action) {
         loggedIn: false,
       }
     case type.USER_LOGOUT:
-      return { user: { error: false }, loggedIn: false, loading: false }
+      return {
+        user: {
+          token: null,
+          error: false
+        },
+        loggedIn: false,
+        loading: false
+      }
     default:
       return state;
   }

@@ -9,7 +9,7 @@ import Input from '../Input/Input';
 import Button from '../Button/Button';
 import { Fragment } from 'react';
 import Header from '../Header/Header';
-import { LogoutUser } from '../../../Actions/actions';
+import { LogoutUser, StartEstimation } from '../../../Actions/actions';
 import * as storage from '../../../LocalStorage/LocalStorage';
 import ModelPopup from '../../../Components/MessagePopup/MessagePopup';
 import { FormErrors } from '../../../Components/FormErrors';
@@ -58,6 +58,7 @@ class EstimateFormContainer extends Component {
       error: error,
     }));
   }
+
   validateField(fieldName, value) {
     let fieldValidationErrors = this.state.formErrors;
     let goldRateValid = this.state.goldRateValid;
@@ -110,41 +111,32 @@ class EstimateFormContainer extends Component {
 
   handleGoldPrice(e) {
     let value = e.target.value;
-    this.setState(
-      (prevState) => ({
-        estimation: {
-          ...prevState.estimation,
-          goldPrice: value,
-        },
-      }),
-      () => console.log(this.state.estimation)
-    );
+    this.setState((prevState) => ({
+      estimation: {
+        ...prevState.estimation,
+        goldPrice: value,
+      },
+    }));
   }
 
   handleGoldWeight(e) {
     let value = e.target.value;
-    this.setState(
-      (prevState) => ({
-        estimation: {
-          ...prevState.estimation,
-          goldWeight: value,
-        },
-      }),
-      () => console.log(this.state.estimation)
-    );
+    this.setState((prevState) => ({
+      estimation: {
+        ...prevState.estimation,
+        goldWeight: value,
+      },
+    }));
   }
 
   handleDiscount(e) {
     let value = e.target.value;
-    this.setState(
-      (prevState) => ({
-        estimation: {
-          ...prevState.estimation,
-          discount: parseFloat(value).toFixed(2),
-        },
-      }),
-      () => console.log(this.state.estimation)
-    );
+    this.setState((prevState) => ({
+      estimation: {
+        ...prevState.estimation,
+        discount: parseFloat(value).toFixed(2),
+      },
+    }));
   }
   //Check User Role
   isPrivilegedUser(role) {
@@ -163,20 +155,26 @@ class EstimateFormContainer extends Component {
 
   handleFormSubmit(e) {
     e.preventDefault();
+
     // calculate total
     this.setState(
       (prevState) => ({
         estimation: {
           ...prevState.estimation,
-          total: this.calculateTotal(
-            prevState.estimation.goldPrice,
-            prevState.estimation.goldWeight,
-            prevState.estimation.discount
-          ),
+          total: this.props.estimation.estimation.total,
         },
       }),
       () => console.log(this.state.estimation)
     );
+
+    const estimateData = {
+      username: this.props.user.user.username,
+      rate: this.state.estimation.goldPrice,
+      weight: this.state.estimation.goldWeight,
+      token: this.props.user.user.token,
+    };
+
+    this.props.calcEstimation(estimateData);
   }
 
   printToFile() {
@@ -221,7 +219,7 @@ class EstimateFormContainer extends Component {
       },
     });
 
-    storage.deleteLocalStorage('user');
+    storage.deleteLocalStorage(storage.USER_STORAGE_KEY);
     this.props.logoutUser();
   }
 
@@ -255,7 +253,6 @@ class EstimateFormContainer extends Component {
               name={'goldPrice'}
               value={this.state.estimation.goldPrice}
               placeholder={'0.00'}
-              //handleChange={this.handleGoldPrice}
               handleChange={this.handleInput}
             />{' '}
             <Input
@@ -264,17 +261,22 @@ class EstimateFormContainer extends Component {
               name={'goldWeight'}
               value={this.state.estimation.goldWeight}
               placeholder={'0.00'}
-              //handleChange={this.handleGoldWeight}
               handleChange={this.handleInput}
             />{' '}
             <Input
               type={'number'}
               title={'Total Price'}
               name={'total'}
-              value={this.state.estimation.total}
+              // value={this.state.estimation.total}
+              value={
+                this.props.estimation.estimation.total &&
+                this.state.estimation.goldPrice > 0 &&
+                this.state.estimation.goldWeight
+                  ? this.props.estimation.estimation.total
+                  : 0
+              }
               placeholder={'0.00'}
               isReadOnly={true}
-              // handleChange={this.handleDiscount}
             />{' '}
             {this.isPrivilegedUser(this.props.user.user.role) ? (
               <Input
@@ -336,10 +338,12 @@ const buttonStyle = {
 
 const mapStateToProps = (state) => ({
   user: state.user,
+  estimation: state.estimation,
 });
 const mapDispatchToProps = (dispatch) => {
   return {
     logoutUser: () => dispatch(LogoutUser()),
+    calcEstimation: (data) => dispatch(StartEstimation(data)),
   };
 };
 
