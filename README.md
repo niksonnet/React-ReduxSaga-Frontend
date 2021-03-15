@@ -29,8 +29,19 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
 
+
+
+
+
+### `Error Boundary `
+### Note: Error Boundary for "Error: Method Not Implemented exception"
+![image](https://user-images.githubusercontent.com/26953057/111107757-70836e80-857d-11eb-818e-45750addbbfe.png)
+
+![image](https://user-images.githubusercontent.com/26953057/111107814-9741a500-857d-11eb-9a67-e8497ff8d596.png)
+ 
+
+### `npm run eject`
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
 If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
