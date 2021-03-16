@@ -56,10 +56,17 @@ describe("Test LoginForm Component", () => {
     expect(actionType.LogoutUser()).toEqual(expectedLogoutAction);
   });
   it("Logout Action Method with payload", () => {
-
     const expectedLogoutAction = {
       type: types.USER_LOGOUT
     }
     expect(actionType.LogoutUser()).toEqual(expectedLogoutAction);
+  });
+
+  it("Estimate Action Method with payload", () => {
+
+    const expectedLogoutAction = {
+      type: types.ESTIMATION_STARTED
+    }
+    expect(actionType.StartEstimation()).toEqual(expectedLogoutAction);
   });
 });
