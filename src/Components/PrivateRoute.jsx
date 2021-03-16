@@ -7,7 +7,7 @@ export const PrivateRoute = ({ component: Component, ...params }) => (
   <Route
     {...params}
     render={(props) =>
-      storage.setLocalStorage(storage.USER_STORAGE_KEY) ? (
+      storage.getLocalStorage(storage.USER_STORAGE_KEY) ? (
         <Component {...params} />
       ) : (
         <Redirect

@@ -1,7 +1,7 @@
 import * as type from "./Types"
 import * as Storage from "../LocalStorage/LocalStorage"
 
-let user = Storage.setLocalStorage(Storage.USER_STORAGE_KEY);
+let user = Storage.getLocalStorage(Storage.USER_STORAGE_KEY);
 const initialState = user ? {
   loggedIn: true,
   loading: false,
@@ -17,7 +17,11 @@ const initialState = user ? {
 export default function users(state = initialState, action) {
   switch (action.type) {
     case type.LOGIN_STARTED:
-      return { ...state, loading: true }
+      return {
+        ...state,
+        loggedIn: false,
+        loading: true
+      }
     case type.LOGIN_SUCCESS:
       return {
         ...state,

@@ -16,6 +16,7 @@ const Input = (props) => {
         onChange={props.handleChange}
         placeholder={props.placeholder}
         readOnly={props.isReadOnly || false}
+        disabled={props.disabled}
         // {...props}
       />
     </div>

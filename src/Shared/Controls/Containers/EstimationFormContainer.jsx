@@ -37,12 +37,10 @@ class EstimateFormContainer extends Component {
       goldRateValid: false,
       goldWeightValid: false,
       formValid: false,
+      isCalculated: false,
     };
 
-    this.handleGoldPrice = this.handleGoldPrice.bind(this);
-    this.handleGoldWeight = this.handleGoldWeight.bind(this);
     this.handleDiscount = this.handleDiscount.bind(this);
-    this.calculateTotal = this.calculateTotal.bind(this);
     this.isPrivilegedUser = this.isPrivilegedUser.bind(this);
     this.printToFile = this.printToFile.bind(this);
     this.handlePrintOnPaper = this.handlePrintOnPaper.bind(this);
@@ -50,13 +48,6 @@ class EstimateFormContainer extends Component {
     this.handleInput = this.handleInput.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.handleClearForm = this.handleClearForm.bind(this);
-  }
-
-  componentDidCatch(error) {
-    this.setState((state) => ({
-      ...state,
-      error: error,
-    }));
   }
 
   validateField(fieldName, value) {
@@ -104,29 +95,10 @@ class EstimateFormContainer extends Component {
           ...prevState.estimation,
           [name]: value,
         },
+        isCalculated: false,
       }),
       () => this.validateField(name, value)
     );
-  }
-
-  handleGoldPrice(e) {
-    let value = e.target.value;
-    this.setState((prevState) => ({
-      estimation: {
-        ...prevState.estimation,
-        goldPrice: value,
-      },
-    }));
-  }
-
-  handleGoldWeight(e) {
-    let value = e.target.value;
-    this.setState((prevState) => ({
-      estimation: {
-        ...prevState.estimation,
-        goldWeight: value,
-      },
-    }));
   }
 
   handleDiscount(e) {
@@ -142,30 +114,18 @@ class EstimateFormContainer extends Component {
   isPrivilegedUser(role) {
     return role && role.toLocaleLowerCase() === 'privileged';
   }
-  // Calculate Rate
-  calculateTotal(rate, weight, discount) {
-    if (this.isPrivilegedUser(this.props.user.user.role)) {
-      return parseFloat(
-        discount > 0 ? rate * weight - discount / 100 : rate * weight
-      ).toFixed(2);
-    }
-
-    return parseFloat(rate * weight).toFixed(2);
-  }
 
   handleFormSubmit(e) {
     e.preventDefault();
 
     // calculate total
-    this.setState(
-      (prevState) => ({
-        estimation: {
-          ...prevState.estimation,
-          total: this.props.estimation.estimation.total,
-        },
-      }),
-      () => console.log(this.state.estimation)
-    );
+    this.setState((prevState) => ({
+      estimation: {
+        ...prevState.estimation,
+        total: this.props.estimation.estimation.total,
+      },
+      isCalculated: true,
+    }));
 
     const estimateData = {
       username: this.props.user.user.username,
@@ -217,9 +177,11 @@ class EstimateFormContainer extends Component {
         discount: discountVal,
         total: 0,
       },
+      isCalculated: false,
     });
 
     storage.deleteLocalStorage(storage.USER_STORAGE_KEY);
+    storage.deleteLocalStorage(storage.ESTIMATION_STORAGE_KEY);
     this.props.logoutUser();
   }
 
@@ -267,16 +229,21 @@ class EstimateFormContainer extends Component {
               type={'number'}
               title={'Total Price'}
               name={'total'}
-              // value={this.state.estimation.total}
               value={
-                this.props.estimation.estimation.total &&
-                this.state.estimation.goldPrice > 0 &&
-                this.state.estimation.goldWeight
+                this.state.isCalculated
                   ? this.props.estimation.estimation.total
                   : 0
               }
+              // value={
+              //   this.props.estimation.estimation.total &&
+              //   this.state.estimation.goldPrice > 0 &&
+              //   this.state.estimation.goldWeight
+              //     ? this.props.estimation.estimation.total
+              //     : 0
+              // }
               placeholder={'0.00'}
               isReadOnly={true}
+              disabled={true}
             />{' '}
             {this.isPrivilegedUser(this.props.user.user.role) ? (
               <Input
@@ -286,6 +253,7 @@ class EstimateFormContainer extends Component {
                 value={this.state.estimation.discount}
                 placeholder={'0.00'}
                 handleChange={this.handleDiscount}
+                disabled={true}
               />
             ) : null}
             <Button

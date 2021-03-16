@@ -6,9 +6,14 @@ let estimation = Storage.getLocalStorage(Storage.ESTIMATION_STORAGE_KEY);
 const initialState = estimation ? {
   loading: false,
   error: null,
-  estimation: { ...estimation }
+  estimation: {
+    ...estimation
+  }
 } :
   {
+    estimation: {
+      total: 0
+    },
     loading: false,
     error: null
   };

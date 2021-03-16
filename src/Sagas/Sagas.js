@@ -28,8 +28,8 @@ function* fetchUser(action) {
 }
 
 function* Logout() {
-  storage.deleteLocalStorage(storage.USER_STORAGE_KEY);
-  storage.deleteLocalStorage(storage.ESTIMATION_STORAGE_KEY);
+  yield storage.deleteLocalStorage(storage.USER_STORAGE_KEY);
+  yield storage.deleteLocalStorage(storage.ESTIMATION_STORAGE_KEY);
 
   yield put({ type: type.USER_LOGOUT });
 }
@@ -37,10 +37,6 @@ function* Logout() {
 function* startEstimation(action) {
   try {
     var bearer = 'Bearer ' + action.payload.token;
-    const formData = new FormData();
-    formData.append("username", action.payload["username"]);
-    formData.append("rate", action.payload["rate"]);
-    formData.append("weight", action.payload["weight"]);
 
     const estimationResponse = yield call(fetch,
       type.API_URI + "/estimation",
