@@ -1,2 +1,2 @@
-# jewelry-store-challenge
-jewelry-store-challenge
+# jewelry-store
+jewelry-store Front-end
